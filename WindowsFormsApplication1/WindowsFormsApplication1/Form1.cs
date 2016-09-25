@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
+using System.IO;                    // Library for performing Input/ Output Operations
 using System.Security.Cryptography; // Library used for encryption and decryption
 
+// Creating the namespace for the Notepad application
 namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
@@ -20,7 +21,8 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             this.Text = "Untitled";            
         }
-
+        
+        // Creating the new tool strip menu item
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = "";
@@ -49,17 +51,16 @@ namespace WindowsFormsApplication1
                 DialogResult result = openFileDialog1.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    string path = openFileDialog1.FileName;
-                    string sourceCode = File.ReadAllText(path);
-                    string enteredPassword = Microsoft.VisualBasic.Interaction.InputBox("Please Enter Password", "Attention Required...!!!!", "");
-                    richTextBox1.Visible = true;
-                    //richTextBox1.Text = sourceCode.ToString();
-                    string decryptText = DecryptText(sourceCode.ToString(), enteredPassword.ToString());
+                    string path = openFileDialog1.FileName;         // Creating the Filename context path
+                    string sourceCode = File.ReadAllText(path);     // Reading all the data/text from the filename provided through context path
+                    string enteredPassword = Microsoft.VisualBasic.Interaction.InputBox("Please Enter Password", "Attention Required...!!!!", ""); // Creating a dialog box to enter the password of the filename
+                    richTextBox1.Visible = true;                    // Sets visibility for the text in the notepad
+                    string decryptText = DecryptText(sourceCode.ToString(), enteredPassword.ToString());   //  the decrypted text or data in the notepad 
                     if(decryptText != "")
                     {
                         richTextBox1.Text = decryptText;
-                        string filename = Path.GetFileNameWithoutExtension(path);
-                        this.Text = filename;
+                        string filename = Path.GetFileNameWithoutExtension(path); // Getting the filename without the extension
+                        this.Text = filename;   // Setting text and pathinfo
                         this.pathInfo = path;
                     }                    
                 }
@@ -90,13 +91,13 @@ namespace WindowsFormsApplication1
                 if (result == DialogResult.OK)
                 {
                     string encryptText = "";
-                    path = saveFileDialog1.FileName;
-                    encryptText = EncryptText(richTextBox1.Text, enteredPassword.ToString());
-                    if(encryptText != "")
+                    path = saveFileDialog1.FileName;    // Creating the Filename context path
+                    encryptText = EncryptText(richTextBox1.Text, enteredPassword.ToString());  //  the encrypted text or data in the notepad 
+                    if (encryptText != "")
                     {
                         System.IO.File.WriteAllText(path, encryptText);
-                        string filename = Path.GetFileNameWithoutExtension(path);
-                        this.Text = filename;
+                        string filename = Path.GetFileNameWithoutExtension(path);   // Getting the filename without the extension
+                        this.Text = filename;   // Setting text and pathinfo
                         this.pathInfo = path;
                     }                    
                 }                
@@ -121,9 +122,10 @@ namespace WindowsFormsApplication1
                 {
                     try
                     {
-                        Encryption.KeySize = 256;
-                        Encryption.BlockSize = 128;
+                        Encryption.KeySize = 256;   // Setting the encryption key size
+                        Encryption.BlockSize = 128; // Setting the block size
 
+                        // Setting the encryption key & Mode
                         var key = new Rfc2898DeriveBytes(passwordBytes, myNumberBytes, 1000);
                         Encryption.Key = key.GetBytes(Encryption.KeySize / 8);
                         Encryption.IV = key.GetBytes(Encryption.BlockSize / 8);
@@ -135,7 +137,7 @@ namespace WindowsFormsApplication1
                             cs.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
                             cs.Close();
                         }
-                        encryptedBytes = ms.ToArray();
+                        encryptedBytes = ms.ToArray();  // Converting the encrypted bytes to an array
                     }
                     catch(Exception e)
                     {
@@ -161,9 +163,10 @@ namespace WindowsFormsApplication1
                 {
                     try
                     {
-                        Decryption.KeySize = 256;
-                        Decryption.BlockSize = 128;
+                        Decryption.KeySize = 256;    // Setting the decryption key size
+                        Decryption.BlockSize = 128;  // Setting the blocksize
 
+                        // deriving the encryption key & Mode
                         var key = new Rfc2898DeriveBytes(passwordBytes, myNumberBytes, 1000);
                         Decryption.Key = key.GetBytes(Decryption.KeySize / 8);
                         Decryption.IV = key.GetBytes(Decryption.BlockSize / 8);
